@@ -7,18 +7,41 @@ export default function Main() {
 
   const [coins, setCoins] = useState<any>([])
   const [kingOfHill, setKingOfHill] = useState<any>()
-  const [sort, setSort] = useState('bump order')
+  const [sort, setSort] = useState('last_trade_timestamp')
+  const [order, setOrder] = useState('DESC')
   const [openSort, setOpenSort] = useState<any>(false)
   const [openOrder, setOpenOrder] = useState<any>(false)
+  const [showAnimation,setShowAnimation]=useState<any>(false)
+  const [nsfw,setnsfw]=useState(false)
+
+
+interface sorts {
+  [key: string]: string;
+}
+  let sorts:any={
+    'last_trade_timestamp':'bump order',
+    'last_reply':'sort: last reply',
+    'reply_count':'sort: reply count',
+    'market_cap':'sort: market cap',
+    'created_timestamp':'sort: creation time'
+  }
 
   useEffect(() => {
     getCoinDetails()
     getKingOfTheHill()
   }, [])
+  useEffect(() => {
+    getCoinDetails()
+    getKingOfTheHill()
+  }, [nsfw])
+
+  useEffect(()=>{
+    getCoinDetails()
+  },[sort,order])
 
   async function getKingOfTheHill() {
     // setLoadingNews(true)
-    let url = 'https://client-api-2-74b1891ee9f9.herokuapp.com/coins/king-of-the-hill?includeNsfw=false'
+    let url = 'https://client-api-2-74b1891ee9f9.herokuapp.com/coins/king-of-the-hill?includeNsfw='+nsfw
     fetch(url)
       .then(function (response) {
         return response.json();
@@ -40,7 +63,7 @@ export default function Main() {
 
   async function getCoinDetails() {
     // setLoadingNews(true)
-    let url = 'https://client-api-2-74b1891ee9f9.herokuapp.com/coins?offset=0&limit=50&sort=last_trade_timestamp&order=DESC&includeNsfw=false'
+    let url = 'https://client-api-2-74b1891ee9f9.herokuapp.com/coins?offset=0&limit=50&sort='+sort+'&order='+order+'&includeNsfw='+nsfw
     fetch(url)
       .then(function (response) {
         return response.json();
@@ -209,76 +232,94 @@ export default function Main() {
             <div className="grid sm:flex gap-4 w-full items-center">
               <div className="flex gap-4">
                 <div>
-                  <button onClick={(e)=>{setOpenSort(!openSort)}} type="button" role="combobox" aria-controls="radix-:r0:" aria-expanded="false" aria-autocomplete="none" dir="ltr" data-state="closed" className="flex h-10 w-full sm:w-fit items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&amp;>span]:line-clamp-1  bg-green-300 text-black border-none focus:border-none active:border-none" aria-label="Sort">
+                  <button onClick={(e) => { setOpenSort(!openSort) }} type="button" role="combobox" aria-controls="radix-:r0:" aria-expanded="false" aria-autocomplete="none" dir="ltr" data-state="closed" className="flex h-10 w-full sm:w-fit items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&amp;>span]:line-clamp-1  bg-green-300 text-black border-none focus:border-none active:border-none" aria-label="Sort">
                     <span>
-                      sort: {sort}
+                      {sorts[sort]}
                     </span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down h-4 w-4 opacity-50" aria-hidden="true">
                       <path d="m6 9 6 6 6-6">
                       </path>
                     </svg>
                   </button>
-                  <div className={`border-2 text-black absolute p-1 bg-green-300 rounded-lg ${openSort===true?'':'hidden'}`}>
+                  <div className={` text-black absolute p-2 bg-green-300 rounded-lg ${openSort === true ? '' : 'hidden'}`}>
+                  
+                    <div className={`flex ${sort === 'last_trade_timestamp' ? 'bg-white' : ''} hover:bg-white px-1 w-full text-md`}>
+                      <h1 onClick={(e) => { setSort('last_trade_timestamp'); setOpenSort(!openSort); }} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
+                        <Check className={`w-5 mr-2 ${sort !== 'last_trade_timestamp' ? 'opacity-0' : 'opacity-1'}`} />
+                        sort: bump order
+                      </h1>
+                    </div>
 
-                      <div className={`flex ${sort==='bump order'?'bg-white':''} hover:bg-white px-1 w-full text-md`}>
-                        <h1 onClick={(e)=>{setSort('bump order');setOpenSort(!openSort)}} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
-                          <Check className={`w-5 mr-2 ${sort!=='bump order'?'opacity-0':'opacity-1'}`} />
-                          sort: bump order
-                        </h1>
-                      </div>
+                    <div className={`flex ${sort === 'last_reply' ? 'bg-white' : ''} hover:bg-white px-1 w-full text-md`}>
+                      <h1 onClick={(e) => { setSort('last_reply'); setOpenSort(!openSort); }} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
+                        <Check className={`w-5 mr-2 ${sort !== 'last_reply' ? 'opacity-0' : 'opacity-1'}`} />
+                        sort: last reply
+                      </h1>
+                    </div>
 
-                      <div className={`flex ${sort==='last reply'?'bg-white':''} hover:bg-white px-1 w-full text-md`}>
-                        <h1 onClick={(e)=>{setSort('last reply');setOpenSort(!openSort)}} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
-                          <Check className={`w-5 mr-2 ${sort!=='last reply'?'opacity-0':'opacity-1'}`} />
-                          sort: last reply
-                        </h1>
-                      </div>
+                    <div className={`flex ${sort === 'reply_count' ? 'bg-white' : ''} hover:bg-white px-1 w-full text-md`}>
+                      <h1 onClick={(e) => { setSort('reply_count'); setOpenSort(!openSort); }} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
+                        <Check className={`w-5 mr-2 ${sort !== 'reply_count' ? 'opacity-0' : 'opacity-1'}`} />
+                        sort: reply count
+                      </h1>
+                    </div>
 
-                      <div className={`flex ${sort==='reply count'?'bg-white':''} hover:bg-white px-1 w-full text-md`}>
-                        <h1 onClick={(e)=>{setSort('reply count');setOpenSort(!openSort)}} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
-                          <Check className={`w-5 mr-2 ${sort!=='reply count'?'opacity-0':'opacity-1'}`} />
-                          sort: reply count
-                        </h1>
-                      </div>
+                    <div className={`flex ${sort === 'market_cap' ? 'bg-white' : ''} hover:bg-white px-1 w-full text-md`}>
+                      <h1 onClick={(e) => { setSort('market_cap'); setOpenSort(!openSort); }} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
+                        <Check className={`w-5 mr-2 ${sort !== 'market_cap' ? 'opacity-0' : 'opacity-1'}`} />
+                        sort: market cap
+                      </h1>
+                    </div>
 
-                      <div className={`flex ${sort==='market cap'?'bg-white':''} hover:bg-white px-1 w-full text-md`}>
-                        <h1 onClick={(e)=>{setSort('market cap');setOpenSort(!openSort)}} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
-                          <Check className={`w-5 mr-2 ${sort!=='market cap'?'opacity-0':'opacity-1'}`} />
-                          sort: market cap
-                        </h1>
-                      </div>
-
-                      <div className={`flex ${sort==='creation time'?'bg-white':''} hover:bg-white px-1 w-full text-md`}>
-                        <h1 onClick={(e)=>{setSort('creation time');setOpenSort(!openSort)}} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
-                          <Check className={`w-5 mr-2 ${sort!=='creation time'?'opacity-0':'opacity-1'}`} />
-                          sort: creation time
-                        </h1>
-                      </div>
-
+                    <div className={`flex ${sort === 'created_timestamp' ? 'bg-white' : ''} hover:bg-white px-1 w-full text-md`}>
+                      <h1 onClick={(e) => { setSort('created_timestamp'); setOpenSort(!openSort); }} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
+                        <Check className={`w-5 mr-2 ${sort !== 'created_timestamp' ? 'opacity-0' : 'opacity-1'}`} />
+                        sort: creation time
+                      </h1>
+                    </div>
 
                   </div>
                 </div>
-                <button type="button" role="combobox" aria-controls="radix-:r1:" aria-expanded="false" aria-autocomplete="none" dir="ltr" data-state="closed" className="flex h-10 w-full sm:w-fit items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&amp;>span]:line-clamp-1  bg-green-300 text-black border-none focus:border-none active:border-none" aria-label="Order">
 
-                  <span>
-                    order: desc
-                  </span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down h-4 w-4 opacity-50" aria-hidden="true">
-                    <path d="m6 9 6 6 6-6">
-                    </path>
-                  </svg>
-                </button>
+                <div>
+                  <button onClick={(e) => { setOpenOrder(!openOrder) }} type="button" role="combobox" aria-controls="radix-:r1:" aria-expanded="false" aria-autocomplete="none" dir="ltr" data-state="closed" className="flex h-10 w-full sm:w-fit items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-sm ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&amp;>span]:line-clamp-1  bg-green-300 text-black border-none focus:border-none active:border-none" aria-label="Order">
+                    <span>
+                      order: desc
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down h-4 w-4 opacity-50" aria-hidden="true">
+                      <path d="m6 9 6 6 6-6">
+                      </path>
+                    </svg>
+                  </button>
+
+                  <div className={`border-2 text-black absolute p-1 bg-green-300 rounded-lg ${openOrder === true ? '' : 'hidden'}`}>
+                    <div className={`flex ${order === 'ASC' ? 'bg-white' : ''} hover:bg-white px-1 w-full text-md`}>
+                      <h1 onClick={(e) => { setOrder('ASC'); setOpenOrder(!openOrder) }} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
+                        <Check className={`w-5 mr-2 ${sort !== 'ASC' ? 'opacity-0' : 'opacity-1'}`} />
+                        order: asc
+                      </h1>
+                    </div>
+
+                    <div className={`flex ${order === 'DESC' ? 'bg-white' : ''} hover:bg-white px-1 w-full text-md`}>
+                      <h1 onClick={(e) => { setOrder('DESC'); setOpenOrder(!openOrder) }} className=' cursor-default flex items-center px-2 py-1 rounded-md'>
+                        <Check className={`w-5 mr-2 ${sort !== 'DESC' ? 'opacity-0' : 'opacity-1'}`} />
+                        order: desc
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
               <div className="flex gap-1 h-fit items-center text-white">
                 <div>Show animations:</div>
-                <div className="cursor-pointer px-1 rounded hover:bg-gray-800 text-gray-500">On</div>
-                <div className="cursor-pointer px-1 rounded bg-green-300 text-black">Off</div>
+                <div onClick={(e)=>{setShowAnimation(true)}} className={`cursor-pointer px-1 rounded ${showAnimation===true ? 'bg-green-300 text-black':'hover:bg-gray-800 text-gray-500'}`}>On</div>
+                <div onClick={(e)=>{setShowAnimation(false)}} className={`cursor-pointer px-1 rounded ${showAnimation===false ? 'bg-green-300 text-black':'hover:bg-gray-800 text-gray-500'}`}>Off</div>
               </div>
               <div className="flex gap-1 h-fit items-center text-white">
                 <div>Include nsfw:</div>
-                <div className="cursor-pointer px-1 rounded hover:bg-gray-800 text-gray-500">On</div>
-                <div className="cursor-pointer px-1 rounded bg-green-300 text-black">Off</div>
+                <div onClick={(e)=>{setnsfw(true)}} className={`cursor-pointer px-1 rounded ${nsfw===true ? 'bg-green-300 text-black':'hover:bg-gray-800 text-gray-500'} `}>On</div>
+                <div onClick={(e)=>{setnsfw(false)}} className={`cursor-pointer px-1 rounded ${nsfw===false ? 'bg-green-300 text-black':'hover:bg-gray-800 text-gray-500'} `}>Off</div>
               </div>
             </div>
 
