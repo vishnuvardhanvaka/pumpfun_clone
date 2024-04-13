@@ -19,7 +19,7 @@ interface sorts {
   [key: string]: string;
 }
   let sorts:any={
-    'last_trade_timestamp':'bump order',
+    'last_trade_timestamp':'sort: bump order',
     'last_reply':'sort: last reply',
     'reply_count':'sort: reply count',
     'market_cap':'sort: market cap',
